@@ -6,13 +6,23 @@ import api from './servers/api';
  function App() {
   const[input, setInput] = useState('')
   const [cep,setCep]= useState ({});
+    function validarCEP (input){
+      if(input === ''){
+        alert("Preenche algum CEP!") 
+        return;
+      } 
+      const regex = /^[0-9]{8}$/;
+      if (!regex.test(input)) {
+        alert("CEP inválido! O CEP deve conter exatamente 8 números.");
+        return false;
+      }
+  
+      return true;
+    }
 
    async function handleSearch(){
-    
-    if(input === ''){
-      alert("Preenche algum CEP!")
-      return;
-    }
+  
+  
     try{
       const response = await api.get(`https://viacep.com.br/ws/${input}/json`)
       setCep (response.data);
@@ -22,15 +32,25 @@ import api from './servers/api';
       setInput("")
     }
   }
+  function handleChange(e) {
+    const value = e.target.value;
+
+    if (/[^0-9]/.test(value)) return; 
+    if (value.length <= 8) {
+      setInput(value);
+    }
+  }
+  
   return (
     <div className="container">
       <h1 className="title"> Buscando CEP  </h1>
       <div className="containerInput">
         <input 
-        type="text"
-        placeholder="Digite seu CEP..."
-        value={input}
-        onChange={(e)=>setInput(e.target.value)}
+       type="text"
+       placeholder="Digite seu CEP..."
+       value={input}
+       onChange={handleChange} 
+       maxLength="8" 
         />
         <button className="ButtonSearth" onClick={handleSearch}>
           <FiSearch seze={25} color="#FFF"/>
@@ -48,6 +68,7 @@ import api from './servers/api';
       )}
     </div>
   );
+  
 }
 
 export default App;
